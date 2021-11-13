@@ -31,6 +31,7 @@
         <mockito-all-version>1.9.5</mockito-all-version>
         <mockito-core-version>2.28.2</mockito-core-version>
         <postgresql-version>9.1-901-1.jdbc4</postgresql-version>
+        <org.apache.poi.version>3.15</org.apache.poi.version>
     </properties>
 
 </project>

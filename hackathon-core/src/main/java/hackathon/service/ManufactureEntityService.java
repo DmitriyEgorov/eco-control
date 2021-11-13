@@ -5,6 +5,7 @@ import hackathon.db.model.TestDataEntity;
 import hackathon.db.repository.ManufactureEntityRepository;
 import org.springframework.stereotype.Service;
 
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -21,7 +22,14 @@ public class ManufactureEntityService {
     }
 
     public List<ManufactureEntity> findByFilter() {
-        return manufactureEntityRepository.findByFilter();
+        return manufactureEntityRepository.findAll();
     }
 
+    public List<ManufactureEntity> findByNorthIsNullOrWestIsNull() {
+        return manufactureEntityRepository.findByNorthIsNullOrWestIsNull();
+    }
+
+    public void saveAll(List<ManufactureEntity> manufactureEntities) {
+        manufactureEntityRepository.saveAll(manufactureEntities);
+    }
 }

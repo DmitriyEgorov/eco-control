@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "MANUFACTURE")
@@ -22,6 +23,15 @@ public class ManufactureEntity {
 
     @Column(name = "ADDRESS")
     private String address;
+
+    @Column(name = "NAME")
+    private String name;
+
+    @Column(name = "NORTH")
+    private BigDecimal north;
+
+    @Column(name = "WEST")
+    private BigDecimal west;
 
     public Long getId() {
         return id;
@@ -53,6 +63,30 @@ public class ManufactureEntity {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public BigDecimal getNorth() {
+        return north;
+    }
+
+    public void setNorth(BigDecimal north) {
+        this.north = north;
+    }
+
+    public BigDecimal getWest() {
+        return west;
+    }
+
+    public void setWest(BigDecimal west) {
+        this.west = west;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
