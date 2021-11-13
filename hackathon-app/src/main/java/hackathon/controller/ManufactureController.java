@@ -3,6 +3,7 @@ package hackathon.controller;
 import hackathon.model.Manufacture;
 import hackathon.processor.ManufactureProcessor;
 import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -15,10 +16,15 @@ import java.util.List;
 @RequestMapping("/manufacture")
 public class ManufactureController {
 
+    private final Environment environment;
+
     private ManufactureProcessor manufactureProcessor;
 
-    public ManufactureController(ManufactureProcessor manufactureProcessor) {
+    public ManufactureController(
+            ManufactureProcessor manufactureProcessor,
+            Environment environment) {
         this.manufactureProcessor = manufactureProcessor;
+        this.environment = environment;
     }
 
     @GetMapping("/getList")
@@ -35,6 +41,11 @@ public class ManufactureController {
                 .contentType(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "report.xlsx" + "\"")
                 .body(new ByteArrayResource(manufactureProcessor.getReport(BooleanUtils.isTrue(all))));
+    }
+
+    @GetMapping("/setCoordinates")
+    public void setCoordinates() {
+        manufactureProcessor.setCoordinates(environment.getProperty("yandex.token"));
     }
 
 }

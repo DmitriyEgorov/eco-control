@@ -25,4 +25,11 @@ public class ManufactureEntityService {
         return manufactureEntityRepository.findAll();
     }
 
+    public List<ManufactureEntity> findByNorthIsNullOrWestIsNull() {
+        return manufactureEntityRepository.findByNorthIsNullOrWestIsNull();
+    }
+
+    public void saveAll(List<ManufactureEntity> manufactureEntities) {
+        manufactureEntityRepository.saveAll(manufactureEntities);
+    }
 }

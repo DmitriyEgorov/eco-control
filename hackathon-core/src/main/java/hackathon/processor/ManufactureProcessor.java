@@ -7,10 +7,27 @@ import hackathon.db.repository.ActivityEntityRepository;
 import hackathon.db.repository.LicenseEntityRepository;
 import hackathon.model.Manufacture;
 import hackathon.service.ManufactureEntityService;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +35,8 @@ import java.util.stream.Collectors;
 @Service
 public class ManufactureProcessor {
     private static final String SEPARATORS = ",";
+    private static final String URL_GEO = "https://geocode-maps.yandex.ru/1.x/?apikey=%s&geocode=%s";
+    private static final String COORDINATE_TAG_NAME = "pos";
 
     private ManufactureEntityService manufactureEntityService;
     private ActivityEntityRepository activityEntityRepository;
@@ -112,5 +131,40 @@ public class ManufactureProcessor {
         );
     }
 
+    public void setCoordinates(String token) {
+        List<ManufactureEntity> list = manufactureEntityService.findByNorthIsNullOrWestIsNull();
+        for (ManufactureEntity manufacture : list) {
+            try {
+                byte[] bytes = manufacture.getAddress().getBytes(StandardCharsets.UTF_8);
+                String utf8EncodedString =
+                        new String(bytes, StandardCharsets.UTF_8)
+                                .replaceAll(" ", "%20");
+                HttpGet request = new HttpGet(String.format(
+                        URL_GEO,
+                        token,
+                        utf8EncodedString));
+                CloseableHttpClient client = HttpClients.createDefault();
+                CloseableHttpResponse response = client.execute(request);
+                HttpEntity entity = response.getEntity();
+                String result = EntityUtils.toString(entity);
+                Document doc = convertStringToXMLDocument(result);
+                NodeList graphNodes = doc.getElementsByTagName(COORDINATE_TAG_NAME);
+                String[] coordinates =
+                        graphNodes.item(0).getFirstChild().getNodeValue().split("\\s+");
+                manufacture.setWest(new BigDecimal(coordinates[0]));
+                manufacture.setNorth(new BigDecimal(coordinates[1]));
+            } catch (Exception e) {
+                System.out.println(e);
+
+            }
+        }
+        manufactureEntityService.saveAll(list);
+    }
+
+    private static Document convertStringToXMLDocument(String xmlString) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        return builder.parse(new InputSource(new StringReader(xmlString)));
+    }
 
 }
