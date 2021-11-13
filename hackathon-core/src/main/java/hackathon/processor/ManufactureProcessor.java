@@ -7,8 +7,10 @@ import hackathon.db.repository.ActivityEntityRepository;
 import hackathon.db.repository.LicenseEntityRepository;
 import hackathon.model.Manufacture;
 import hackathon.service.ManufactureEntityService;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,14 +22,36 @@ public class ManufactureProcessor {
     private ManufactureEntityService manufactureEntityService;
     private ActivityEntityRepository activityEntityRepository;
     private LicenseEntityRepository licenseEntityRepository;
+    private ReportProcessor reportProcessor;
 
     public ManufactureProcessor(
             ManufactureEntityService manufactureEntityService,
             ActivityEntityRepository activityEntityRepository,
-            LicenseEntityRepository licenseEntityRepository) {
+            LicenseEntityRepository licenseEntityRepository,
+            ReportProcessor reportProcessor) {
         this.manufactureEntityService = manufactureEntityService;
         this.licenseEntityRepository = licenseEntityRepository;
         this.activityEntityRepository = activityEntityRepository;
+        this.reportProcessor = reportProcessor;
+    }
+
+    public byte[] getReport(Boolean all) {
+        List<Manufacture> manufactures = getList(all);
+        SXSSFWorkbook wbDisposable = null;
+        try (SXSSFWorkbook wb = new SXSSFWorkbook()) {
+            wbDisposable = wb;
+            reportProcessor.buildSheet(wb, manufactures);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            wb.write(byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            return new byte[0];
+        } finally {
+            //Удаление временных файлов
+            if (wbDisposable != null) {
+                wbDisposable.dispose();
+            }
+        }
     }
 
     public List<Manufacture> getList(Boolean all) {
