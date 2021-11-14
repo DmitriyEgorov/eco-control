@@ -54,8 +54,8 @@ public class ManufactureProcessor {
         this.reportProcessor = reportProcessor;
     }
 
-    public byte[] getReport(Boolean all) {
-        List<Manufacture> manufactures = getList(all);
+    public byte[] getReport(boolean all, boolean withoutLicence, boolean onlyLicence) {
+        List<Manufacture> manufactures = getList(all, withoutLicence, onlyLicence);
         SXSSFWorkbook wbDisposable = null;
         try (SXSSFWorkbook wb = new SXSSFWorkbook()) {
             wbDisposable = wb;
@@ -73,7 +73,10 @@ public class ManufactureProcessor {
         }
     }
 
-    public List<Manufacture> getList(Boolean all) {
+    public List<Manufacture> getList(
+            boolean all,
+            boolean withoutLicence,
+            boolean onlyLicence) {
         List<ManufactureEntity> listFiltered = manufactureEntityService.findByFilter();
         List<ActivityEntity> activityEntities = activityEntityRepository.findAll();
         List<String> activities = activityEntities
@@ -85,12 +88,25 @@ public class ManufactureProcessor {
                 .map(LicenseEntity::getInn)
                 .collect(Collectors.toList());
 
-        listFiltered =
-                listFiltered.stream()
-                        .filter(manufactureEntity -> isMatchedByActivity(manufactureEntity, activities))
-                        .collect(Collectors.toList());
+        if(onlyLicence) {
+            listFiltered = listFiltered.stream()
+                    .filter(manufactureEntity ->
+                            licenses.contains(manufactureEntity.getInn()))
+                    .collect(Collectors.toList());
+            return listFiltered
+                    .stream()
+                    .map(manufactureEntity -> adopt(manufactureEntity, licenses))
+                    .collect(Collectors.toList());
+        }
 
-        if (!all) {
+        if(!all) {
+            listFiltered =
+                    listFiltered.stream()
+                            .filter(manufactureEntity -> isMatchedByActivity(manufactureEntity, activities))
+                            .collect(Collectors.toList());
+        }
+
+        if (withoutLicence) {
             listFiltered = listFiltered.stream()
                     .filter(manufactureEntity ->
                             !licenses.contains(manufactureEntity.getInn()))

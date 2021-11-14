@@ -28,19 +28,32 @@ public class ManufactureController {
     }
 
     @GetMapping("/getList")
-    public List<Manufacture> getList(@RequestParam(name = "all", required = false) Boolean all) {
-        return manufactureProcessor.getList(BooleanUtils.isTrue(all));
+    public List<Manufacture> getList(
+            @RequestParam(name = "all", required = false) Boolean all,
+            @RequestParam(name = "withoutLicence", required = false) Boolean withoutLicence,
+            @RequestParam(name = "onlyLicence", required = false) Boolean onlyLicence
+    ) {
+        return manufactureProcessor.getList(
+                BooleanUtils.isTrue(all),
+                BooleanUtils.isTrue(withoutLicence),
+                BooleanUtils.isTrue(onlyLicence));
     }
 
     @RequestMapping(value = "/getList/report",
             produces = {"application/octet-stream"},
             method = RequestMethod.GET)
-    ResponseEntity<Resource> getReport(@RequestParam(name = "all", required = false) Boolean all) {
+    ResponseEntity<Resource> getReport(
+            @RequestParam(name = "all", required = false) Boolean all,
+            @RequestParam(name = "withoutLicence", required = false) Boolean withoutLicence,
+            @RequestParam(name = "onlyLicence", required = false) Boolean onlyLicence) {
         return ResponseEntity
                 .ok()
                 .contentType(org.springframework.http.MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "report.xlsx" + "\"")
-                .body(new ByteArrayResource(manufactureProcessor.getReport(BooleanUtils.isTrue(all))));
+                .body(new ByteArrayResource(manufactureProcessor.getReport(
+                        BooleanUtils.isTrue(all),
+                        BooleanUtils.isTrue(withoutLicence),
+                        BooleanUtils.isTrue(onlyLicence))));
     }
 
     @GetMapping("/setCoordinates")
