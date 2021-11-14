@@ -77,3 +77,21 @@ CREATE TABLE hackathon_test.LICENSE (
 
 INSERT INTO hackathon_test.LICENSE (INN) VALUES ('75742000');
 
+INSERT INTO hackathon_test.MANUFACTURE (NAME, INN, ACTIVITY, ADDRESS)
+VALUES ('ООО "ГЕФЕСТ"', '7451407401', 'Металлолом, отходы металлические', 'г. Челябинск, ул. Цинковая, д. 1, КОРПУС 2 ОФИС 324');
+
+INSERT INTO hackathon_test.MANUFACTURE (NAME, INN, ACTIVITY, ADDRESS)
+VALUES ('ООО "ЭКОИНЖИНИРИНГ"', '7453294249', 'Электромонтажные работы', 'г. Челябинск, пр-кт Ленина, д. 81, ОФИС 52');
+
+INSERT INTO hackathon_test.MANUFACTURE (NAME, INN, ACTIVITY, ADDRESS)
+VALUES ('ООО "ЧЕЛИНДЛИЗИНГ"', '7453101232', 'Банковские и финансовые услуги, кредит', 'г. Челябинск, ул. Красная, д. 11');
+
+INSERT INTO hackathon_test.MANUFACTURE (NAME, INN, ACTIVITY, ADDRESS)
+VALUES ('АО "ЧЗМК"', '7449010952', 'Готовые металлоизделия и металлоконструкции', 'г.Челябинск, ул.Новороссийская, д.46');
+
+INSERT INTO hackathon_test.MANUFACTURE (NAME, INN, ACTIVITY, ADDRESS)
+VALUES ('ООО "СПЛАВ', '7453297440', 'Услуги в розничной и оптовой торговле', 'г. Челябинск, пр-кт Ленина, д. 81, ПОМ.15 ОФИС 2');
+
+INSERT INTO hackathon_test.MANUFACTURE (NAME, INN, ACTIVITY, ADDRESS)
+VALUES ('ООО "ЦКС"', '7456027298', 'Защита окружающей среды', 'г. Челябинск, ул. Маркса, д. 38, ОФИС 201');
+
